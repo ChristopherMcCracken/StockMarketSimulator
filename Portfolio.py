@@ -1,3 +1,4 @@
+# -------------------------------------------------------------------------------------------------------------------- #
 class Portfolio:
     # Class Variables
 
@@ -7,3 +8,8 @@ class Portfolio:
         self.data = data
 
     # Class Functions
+    def printPortfolioInfo(self):
+        print("Your current portfolio information: ")
+        for key, value in self.data.items():
+            print("" + str(key) + ': ' + str(value))
+# -------------------------------------------------------------------------------------------------------------------- #

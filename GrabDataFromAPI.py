@@ -25,5 +25,7 @@ def GrabDataFromAPI(tickers):
         stockSymbol = stockRequestDict['data'][i]['symbol']
         stockPrice = stockRequestDict['data'][i]['price']
         lastUpdatedTime = stockRequestDict['data'][i]['last_trade_time']
-        print(f'{stockName} ({stockSymbol}): ${stockPrice}, last updated at {lastUpdatedTime}')
+        print(f'{stockName} ({stockSymbol}): ${stockPrice}, last updated at {lastUpdatedTime}\n')
+
+    return stockRequestDict
 # -------------------------------------------------------------------------------------------------------------------- #
