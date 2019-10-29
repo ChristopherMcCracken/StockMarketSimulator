@@ -36,7 +36,7 @@ class Ui_Application(object):
 
         self.retranslateUi(Application)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), Main.buySellStocks)
-        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), Main.printPortfolio())
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), Main.printPortfolio)
         QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), Main.createPortfolio)
         QtCore.QMetaObject.connectSlotsByName(Application)
 
