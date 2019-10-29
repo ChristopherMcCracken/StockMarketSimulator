@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'TestView.ui',
+# licensing of 'TestView.ui' applies.
+#
+# Created: Tue Oct 29 15:03:09 2019
+#      by: pyside2-uic  running on PySide2 5.13.1
+#
+# WARNING! All changes made in this file will be lost!
+import time
+
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPalette, QColor
@@ -5,29 +16,43 @@ from PySide2.QtGui import QPalette, QColor
 from StockMarketApplication import Main
 
 
-class Ui_StockMarketApplication(object):
-    def setupUi(self, StockMarketApplication):
-        StockMarketApplication.setObjectName("StockMarketApplication")
-        StockMarketApplication.resize(460, 330)
-        self.gridLayout = QtWidgets.QGridLayout(StockMarketApplication)
+class Ui_Application(object):
+
+    def setupUi(self, Application):
+        Application.setObjectName("Application")
+        Application.resize(500, 500)  # Default size
+        self.gridLayout = QtWidgets.QGridLayout(Application)
         self.gridLayout.setObjectName("gridLayout")
-        self.pushButton = QtWidgets.QPushButton(StockMarketApplication)
+        self.pushButton_3 = QtWidgets.QPushButton(Application)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.gridLayout.addWidget(self.pushButton_3, 4, 0, 1, 1)
+        self.pushButton = QtWidgets.QPushButton(Application)
         self.pushButton.setStyleSheet("")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
+        self.pushButton_2 = QtWidgets.QPushButton(Application)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.gridLayout.addWidget(self.pushButton_2, 3, 0, 1, 1)
 
-        self.retranslateUi(StockMarketApplication)
-        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("pressed()"), Main.main)  # when button is pressed main is ran
-        QtCore.QMetaObject.connectSlotsByName(StockMarketApplication)
+        self.retranslateUi(Application)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), Main.buySellStocks)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), Main.printPortfolio())
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), Main.createPortfolio)
+        QtCore.QMetaObject.connectSlotsByName(Application)
 
-    def retranslateUi(self, StockMarketApplication):
-        StockMarketApplication.setWindowTitle(QtWidgets.QApplication.translate("StockMarketApplication", "StockMarketApplication", None, -1))
-        self.pushButton.setText(QtWidgets.QApplication.translate("StockMarketApplication", "Run Program", None, -1))
+    def retranslateUi(self, Application):
+        Application.setWindowTitle(
+            QtWidgets.QApplication.translate("Application", "Stock Market Application", None, -1))
+        self.pushButton_3.setText(QtWidgets.QApplication.translate("Application", "Create Portfolio", None, -1))
+        self.pushButton.setText(QtWidgets.QApplication.translate("Application", "Buy/Sell Stocks", None, -1))
+        self.pushButton_2.setText(QtWidgets.QApplication.translate("Application", "View Portfolio", None, -1))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
+
     # Change palette to allow for for dark theme
     app.setStyle('Fusion')
     palette = QPalette()
@@ -45,8 +70,9 @@ if __name__ == "__main__":
     palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
     palette.setColor(QPalette.HighlightedText, Qt.black)
     app.setPalette(palette)
-    StockMarketApplication = QtWidgets.QWidget()
-    ui = Ui_StockMarketApplication()
-    ui.setupUi(StockMarketApplication)
-    StockMarketApplication.show()
+
+    Application = QtWidgets.QWidget()
+    ui = Ui_Application()
+    ui.setupUi(Application)
+    Application.show()
     sys.exit(app.exec_())
