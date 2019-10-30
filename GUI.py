@@ -1,22 +1,23 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'TestView.ui',
-# licensing of 'TestView.ui' applies.
-#
-# Created: Tue Oct 29 15:03:09 2019
-#      by: pyside2-uic  running on PySide2 5.13.1
-#
-# WARNING! All changes made in this file will be lost!
-import time
-
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPalette, QColor
+from PySide2.QtWidgets import QMainWindow, QApplication
 
 from StockMarketApplication import Main
 
 
+# -------------------------------------------------------------------------------------------------------------------- #
 class Ui_Application(object):
+# -------------------------------------------------------------------------------------------------------------------- #
+    def viewPortfolio(self):
+        self.viewPortfolioWindow = QMainWindow()
+        self.viewPortfolioWindow.resize(500, 500)
+        self.viewPortfolioWindow.setWindowTitle("Current Tab")
+        label = QtWidgets.QLabel(self.viewPortfolioWindow)
+        label.move(50, 50)
+        label.setText(Main.getPortfolioInfo())
+        label.adjustSize()
+        self.viewPortfolioWindow.show()
 
     def setupUi(self, Application):
         Application.setObjectName("Application")
@@ -36,10 +37,11 @@ class Ui_Application(object):
 
         self.retranslateUi(Application)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), Main.buySellStocks)
-        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), Main.printPortfolio)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), self.viewPortfolio)
         QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), Main.createPortfolio)
         QtCore.QMetaObject.connectSlotsByName(Application)
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def retranslateUi(self, Application):
         Application.setWindowTitle(
             QtWidgets.QApplication.translate("Application", "Stock Market Application", None, -1))
@@ -48,6 +50,7 @@ class Ui_Application(object):
         self.pushButton_2.setText(QtWidgets.QApplication.translate("Application", "View Portfolio", None, -1))
 
 
+# -------------------------------------------------------------------------------------------------------------------- #
 if __name__ == "__main__":
     import sys
 
@@ -76,3 +79,4 @@ if __name__ == "__main__":
     ui.setupUi(Application)
     Application.show()
     sys.exit(app.exec_())
+# -------------------------------------------------------------------------------------------------------------------- #

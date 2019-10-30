@@ -8,8 +8,9 @@ class Portfolio:
         self.data = data
 
     # Class Functions
-    def printPortfolioInfo(self):
-        print("Your current portfolio information: ")
+    def portfolioInfo(self):
+        retVal = "Your current portfolio information: \n"
         for key, value in self.data.items():
-            print("" + str(key) + ': ' + str(value))
+            retVal += ("" + str(key) + ': ' + str(value) + "\n")
+        return retVal
 # -------------------------------------------------------------------------------------------------------------------- #

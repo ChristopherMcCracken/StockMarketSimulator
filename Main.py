@@ -1,7 +1,6 @@
 from StockMarketApplication.Portfolio import Portfolio
 from StockMarketApplication.GrabDataFromAPI import GrabDataFromAPI
 
-
 # -------------------------------------------------------------------------------------------------------------------- #
 def buySellStocks():
     tickersToGrab = promptForTickers()
@@ -18,7 +17,7 @@ def buySellStocks():
         p1.data['Stocks'][ticker] += purchaseCount
     else:
         p1.data['Stocks'][ticker] = purchaseCount
-    p1.printPortfolioInfo()
+    p1.portfolioInfo()
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -41,8 +40,8 @@ def promptForTickers():
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def printPortfolio():
-    p1.printPortfolioInfo()
+def getPortfolioInfo():
+    return p1.portfolioInfo()
 # -------------------------------------------------------------------------------------------------------------------- #
 
 
