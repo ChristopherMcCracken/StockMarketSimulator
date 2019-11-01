@@ -1,21 +1,35 @@
+import sys
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QPalette, QColor
-from PySide2.QtWidgets import QMainWindow, QApplication
-
-from StockMarketApplication import Main
+from PySide2.QtGui import QPalette, QColor, Qt
+from PySide2.QtWidgets import QMainWindow, QApplication, QInputDialog, QWidget, QPushButton, QLabel, QFormLayout, QLineEdit
+import Main
+from Main import createPortfolio
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 class Ui_Application(object):
-# -------------------------------------------------------------------------------------------------------------------- #
-    def viewPortfolio(self):
+    # -------------------------------------------------------------------------------------------------------------------- #
+    def buySellStocks(self):
+        self.createPortfolioWindow = inputDialog()
+        portfolioName = self.createPortfolioWindow.gettext()
+        Main.buySellStocks(portfolioName)
+
+    def createPortfolioWindow(self):
+        self.createPortfolioWindow = inputDialog()
+        portfolioName = self.createPortfolioWindow.gettext()
+        print(f'Portfolio Name: {portfolioName}\n')
+        createPortfolio(portfolioName)
+        return portfolioName
+
+    def viewPortfolioWindow(self):
+        self.createPortfolioWindow = inputDialog()
+        portfolioName = self.createPortfolioWindow.gettext()
         self.viewPortfolioWindow = QMainWindow()
         self.viewPortfolioWindow.resize(500, 500)
-        self.viewPortfolioWindow.setWindowTitle("Current Tab")
+        self.viewPortfolioWindow.setWindowTitle("viewPortfolio")
         label = QtWidgets.QLabel(self.viewPortfolioWindow)
         label.move(50, 50)
-        label.setText(Main.getPortfolioInfo())
+        label.setText(Main.getPortfolioInfo(portfolioName))
         label.adjustSize()
         self.viewPortfolioWindow.show()
 
@@ -36,12 +50,12 @@ class Ui_Application(object):
         self.gridLayout.addWidget(self.pushButton_2, 3, 0, 1, 1)
 
         self.retranslateUi(Application)
-        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), Main.buySellStocks)
-        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), self.viewPortfolio)
-        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), Main.createPortfolio)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), self.buySellStocks)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), self.viewPortfolioWindow)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), self.createPortfolioWindow)
         QtCore.QMetaObject.connectSlotsByName(Application)
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # -------------------------------------------------------------------------------------------------------------------- #
     def retranslateUi(self, Application):
         Application.setWindowTitle(
             QtWidgets.QApplication.translate("Application", "Stock Market Application", None, -1))
@@ -51,9 +65,27 @@ class Ui_Application(object):
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-if __name__ == "__main__":
-    import sys
+class inputDialog(QWidget):
+    # -------------------------------------------------------------------------------------------------------------------- #
+    def __init__(self, parent=None):
+        super(inputDialog, self).__init__(parent)  # call initializer
 
+        layout = QFormLayout()
+
+        # Add button to row
+        self.row1 = QLineEdit()
+        self.btn1 = QPushButton("Name: ")
+        self.btn1.clicked.connect(self.gettext)
+
+    # -------------------------------------------------------------------------------------------------------------------- #
+    def gettext(self):
+        text = QInputDialog.getText(self, 'Create Portfolio', 'Enter your name:')
+        self.row1.setText(str(text))
+        return text[0]  # text[1] holds true
+
+
+# -------------------------------------------------------------------------------------------------------------------- #
+def main():
     app = QtWidgets.QApplication(sys.argv)
 
     # Change palette to allow for for dark theme
@@ -79,4 +111,7 @@ if __name__ == "__main__":
     ui.setupUi(Application)
     Application.show()
     sys.exit(app.exec_())
+
+
 # -------------------------------------------------------------------------------------------------------------------- #
+main()

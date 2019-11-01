@@ -1,8 +1,9 @@
-from StockMarketApplication.Portfolio import Portfolio
-from StockMarketApplication.GrabDataFromAPI import GrabDataFromAPI
+from Portfolio import Portfolio
+from GrabDataFromAPI import GrabDataFromAPI
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def buySellStocks():
+def buySellStocks(portfolioName):
     tickersToGrab = promptForTickers()
     stockData = GrabDataFromAPI(tickersToGrab)
     ticker = str(input("Please enter the ticker for a stock you would like to purchase/sell: "))
@@ -11,13 +12,12 @@ def buySellStocks():
     amountSpent = float(purchaseCount) * tickerPrice
     # Update Portfolio
     print(f'\nYou have spent {amountSpent} for {purchaseCount} shares of {ticker}\n')
-    p1.data['Overview']['sharesOwned'] += purchaseCount
-    p1.data['Overview']['netWorth'] += amountSpent
-    if ticker in p1.data['Stocks']:
-        p1.data['Stocks'][ticker] += purchaseCount
+    Portfolio.portfolios[portfolioName]['Overview']['sharesOwned'] += purchaseCount
+    Portfolio.portfolios[portfolioName]['Overview']['netWorth'] += amountSpent
+    if ticker in Portfolio.portfolios[portfolioName]['Stocks']:
+        Portfolio.portfolios[portfolioName]['Stocks'][ticker] += purchaseCount
     else:
-        p1.data['Stocks'][ticker] = purchaseCount
-    p1.portfolioInfo()
+        Portfolio.portfolios[portfolioName]['Stocks'][ticker] = purchaseCount
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -40,18 +40,19 @@ def promptForTickers():
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def getPortfolioInfo():
-    return p1.portfolioInfo()
-# -------------------------------------------------------------------------------------------------------------------- #
+def getPortfolioInfo(name):
+    return str(Portfolio.portfolios[name])
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def createPortfolio():
-    print("TODO")
+def createPortfolio(name):
+    newPortfolio = Portfolio({'Overview': {'Name': name, 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
+    getPortfolioInfo(name)
+    return newPortfolio
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Default Portfolio
-p1 = Portfolio({'Overview': {'firstName': 'John', 'lastName': 'Smith', 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
+p1 = Portfolio({'Overview': {'Name': 'John', 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
 
 # -------------------------------------------------------------------------------------------------------------------- #
