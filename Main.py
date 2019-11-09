@@ -3,56 +3,39 @@ from GrabDataFromAPI import GrabDataFromAPI
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def buySellStocks(portfolioName):
-    tickersToGrab = promptForTickers()
-    stockData = GrabDataFromAPI(tickersToGrab)
-    ticker = str(input("Please enter the ticker for a stock you would like to purchase/sell: "))
-    tickerPrice = float(stockData['data'][tickersToGrab[ticker]]['price'])
-    purchaseCount = int(input(f'\nThe price of this ticker is: {tickerPrice}, how many would you like to buy/sell? (negative number to sell): '))
-    amountSpent = float(purchaseCount) * tickerPrice
+def buySellStocks(portfolioName, stockTicker, stockAmount):
+    print(stockTicker)
+    stockData = GrabDataFromAPI(stockTicker)
+    print(stockData)
+    tickerPrice = float(stockData['data'][0]['price'])
+    print(f"The price of this ticker is: {tickerPrice}")
+    amountSpent = float(stockAmount) * tickerPrice
     # Update Portfolio
-    print(f'\nYou have spent {amountSpent} for {purchaseCount} shares of {ticker}\n')
-    Portfolio.portfolios[portfolioName]['Overview']['sharesOwned'] += purchaseCount
+    print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
+    Portfolio.portfolios[portfolioName]['Overview']['sharesOwned'] += stockAmount
     Portfolio.portfolios[portfolioName]['Overview']['netWorth'] += amountSpent
-    if ticker in Portfolio.portfolios[portfolioName]['Stocks']:
-        Portfolio.portfolios[portfolioName]['Stocks'][ticker] += purchaseCount
+    if stockTicker in Portfolio.portfolios[portfolioName]['Stocks']:
+        Portfolio.portfolios[portfolioName]['Stocks'][stockTicker] += stockAmount
     else:
-        Portfolio.portfolios[portfolioName]['Stocks'][ticker] = purchaseCount
-
-
-# -------------------------------------------------------------------------------------------------------------------- #
-def promptForTickers():
-    tickers = {}
-    for i in range(20):  # 20 is the max number of stock queries per API call
-        ticker = str(input("\nPlease enter the ticker for a stock you would like to see data for, then hit enter. When you are finished choosing tickers, enter nothing: "))
-        if ticker in tickers:
-            print("Duplicate Ticker, try again.")
-            i -= i  # dont want to increment i in this instance
-            continue
-        elif ticker == '':
-            print()
-            break
-        else:
-            tickers[ticker] = i
-    print(tickers)
-    print()
-    return tickers
+        Portfolio.portfolios[portfolioName]['Stocks'][stockTicker] = stockAmount
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
-    return str(Portfolio.portfolios[name])
+    retVal = "Your current portfolio information: \n"
+    for key, value in Portfolio.portfolios[name].items():
+        retVal += ("" + str(key) + ': ' + str(value) + "\n")
+    return str(retVal)
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def createPortfolio(name):
     newPortfolio = Portfolio({'Overview': {'Name': name, 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
-    getPortfolioInfo(name)
     return newPortfolio
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Default Portfolio
-p1 = Portfolio({'Overview': {'Name': 'John', 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
+p1 = Portfolio({'Overview': {'Name': 'Chris', 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
 
 # -------------------------------------------------------------------------------------------------------------------- #

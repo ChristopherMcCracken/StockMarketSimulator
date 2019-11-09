@@ -8,25 +8,26 @@ from Main import createPortfolio
 
 # -------------------------------------------------------------------------------------------------------------------- #
 class Ui_Application(object):
-    # -------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------------------------------------------------------------------------------- #
     def buySellStocks(self):
-        self.createPortfolioWindow = inputDialog()
-        portfolioName = self.createPortfolioWindow.gettext()
-        Main.buySellStocks(portfolioName)
+        myList = self.inputWindow = inputDialog()
+        portfolioName = self.inputWindow.gettext("Enter portfolio to update: ")
+        stockTicker = self.inputWindow.gettext("Enter stock to buy/sell: ")
+        stockAmount = self.inputWindow.getint("Enter how many to buy/sell: ")
+        Main.buySellStocks(portfolioName, stockTicker, stockAmount)
 
     def createPortfolioWindow(self):
-        self.createPortfolioWindow = inputDialog()
-        portfolioName = self.createPortfolioWindow.gettext()
-        print(f'Portfolio Name: {portfolioName}\n')
+        self.inputWindow = inputDialog()
+        portfolioName = self.inputWindow.gettext()
         createPortfolio(portfolioName)
         return portfolioName
 
     def viewPortfolioWindow(self):
-        self.createPortfolioWindow = inputDialog()
-        portfolioName = self.createPortfolioWindow.gettext()
+        self.inputWindow = inputDialog()
+        portfolioName = self.inputWindow.gettext()
         self.viewPortfolioWindow = QMainWindow()
         self.viewPortfolioWindow.resize(500, 500)
-        self.viewPortfolioWindow.setWindowTitle("viewPortfolio")
+        self.viewPortfolioWindow.setWindowTitle("View Portfolio")
         label = QtWidgets.QLabel(self.viewPortfolioWindow)
         label.move(50, 50)
         label.setText(Main.getPortfolioInfo(portfolioName))
@@ -66,23 +67,53 @@ class Ui_Application(object):
 
 # -------------------------------------------------------------------------------------------------------------------- #
 class inputDialog(QWidget):
-    # -------------------------------------------------------------------------------------------------------------------- #
     def __init__(self, parent=None):
-        super(inputDialog, self).__init__(parent)  # call initializer
+        super(inputDialog, self).__init__(parent)
+
+        infoList = ['', '', '']
 
         layout = QFormLayout()
+        self.btn = QPushButton("Choose from list")
+        self.btn.clicked.connect(self.getItem)
 
-        # Add button to row
-        self.row1 = QLineEdit()
-        self.btn1 = QPushButton("Name: ")
+        self.le = QLineEdit()
+        layout.addRow(self.btn, self.le)
+        self.btn1 = QPushButton("get name")
         self.btn1.clicked.connect(self.gettext)
 
-    # -------------------------------------------------------------------------------------------------------------------- #
-    def gettext(self):
-        text = QInputDialog.getText(self, 'Create Portfolio', 'Enter your name:')
-        self.row1.setText(str(text))
-        return text[0]  # text[1] holds true
+        self.le1 = QLineEdit()
+        layout.addRow(self.btn1, self.le1)
+        self.btn2 = QPushButton("Enter an integer")
+        self.btn2.clicked.connect(self.getint)
 
+        self.le2 = QLineEdit()
+        layout.addRow(self.btn2, self.le2)
+        self.setLayout(layout)
+        self.setWindowTitle("Input Dialog demo")
+
+    def getItem(self, prompt="Enter an option: "):
+        items = ("P1", "P2", "P3", "P4")
+
+        item, ok = QInputDialog.getItem(self, prompt,
+                                        "List of Portfolios", items, 0, False)
+
+        if ok and item:
+            self.le.setText(item)
+            return str(item)
+
+    def gettext(self, prompt="Enter a string: "):
+        text, ok = QInputDialog.getText(self, 'Text Input Dialog', prompt)
+
+        if ok:
+            self.le1.setText(str(text))
+            return str(text)
+
+    def getint(self, prompt="Enter a number: "):
+        num, ok = QInputDialog.getInt(self, "integer input dualog", prompt)
+
+        if ok:
+            self.le2.setText(str(num))
+            return int(num)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def main():
