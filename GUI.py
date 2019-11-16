@@ -26,7 +26,7 @@ class Ui_Application(object):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
         self.viewPortfolioWindow = QMainWindow()
-        self.viewPortfolioWindow.resize(500, 500)
+        self.viewPortfolioWindow.resize(1000, 500)
         self.viewPortfolioWindow.setWindowTitle("View Portfolio")
         label = QtWidgets.QLabel(self.viewPortfolioWindow)
         label.move(50, 50)
@@ -36,7 +36,7 @@ class Ui_Application(object):
 
     def setupUi(self, Application):
         Application.setObjectName("Application")
-        Application.resize(500, 500)  # Default size
+        Application.resize(1000, 1000)
         self.gridLayout = QtWidgets.QGridLayout(Application)
         self.gridLayout.setObjectName("gridLayout")
         self.pushButton_3 = QtWidgets.QPushButton(Application)
