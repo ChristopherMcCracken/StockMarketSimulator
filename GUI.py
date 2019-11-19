@@ -12,8 +12,8 @@ class Ui_Application(object):
     def buySellStocks(self):
         myList = self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext("Enter portfolio to update: ")
-        stockTicker = self.inputWindow.gettext("Enter stock to buy/sell: ")
-        stockAmount = self.inputWindow.getint("Enter how many to buy/sell: ")
+        stockTicker = self.inputWindow.gettext("Enter the stock name to trade: ")
+        stockAmount = self.inputWindow.getint("Enter how many shares to buy/sell: ")
         Main.buySellStocks(portfolioName, stockTicker, stockAmount)
 
     def createPortfolioWindow(self):
@@ -101,7 +101,7 @@ class inputDialog(QWidget):
             self.le.setText(item)
             return str(item)
 
-    def gettext(self, prompt="Enter a string: "):
+    def gettext(self, prompt="Enter The Portfolio Name: "):
         text, ok = QInputDialog.getText(self, 'Text Input Dialog', prompt)
 
         if ok:
@@ -109,7 +109,7 @@ class inputDialog(QWidget):
             return str(text)
 
     def getint(self, prompt="Enter a number: "):
-        num, ok = QInputDialog.getInt(self, "integer input dualog", prompt)
+        num, ok = QInputDialog.getInt(self, "integer input dialog", prompt)
 
         if ok:
             self.le2.setText(str(num))
