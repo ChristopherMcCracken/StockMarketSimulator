@@ -13,7 +13,7 @@ def buySellStocks(portfolioName, stockTicker, stockAmount):
     # Update Portfolio
     print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
     Portfolio.portfolios[portfolioName]['Overview']['sharesOwned'] += stockAmount
-    Portfolio.portfolios[portfolioName]['Overview']['netWorth'] += amountSpent
+    Portfolio.portfolios[portfolioName]['Overview']['netSpent'] += amountSpent
     if stockTicker in Portfolio.portfolios[portfolioName]['Stocks']:
         Portfolio.portfolios[portfolioName]['Stocks'][stockTicker] += stockAmount
     else:
@@ -23,6 +23,24 @@ def buySellStocks(portfolioName, stockTicker, stockAmount):
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
     retVal = "Your current portfolio information: \n"
+    if Portfolio.portfolios[name]['Stocks']:  # if there are no stocks bought yet, the dictionary evaluates to false and passes this block
+        stockList = list(Portfolio.portfolios[name]['Stocks'])  # cast to list to be able to access stocks by integer index
+        stockData = GrabDataFromAPI(stockList)
+        amountSpent = 0
+        i = 0
+        print(f"STOCK DATA: {stockData}")
+        for stock in sorted(Portfolio.portfolios[name]['Stocks']):  # stock data and Portfolio are now iterated in abc order
+            print(f"STOCK: {stock}")
+            tickerPrice = float(stockData['data'][i]['price'])
+            i += 1
+            stockAmount = Portfolio.portfolios[name]['Stocks'][stock]
+            print(f"tickerPrice: {tickerPrice}")
+            print(f"stockAmount: {stockAmount}")
+            amountSpent += stockAmount * tickerPrice
+            print(f"amountSpent: {amountSpent}")
+        Portfolio.portfolios[name]['Overview']['netWorth'] = amountSpent
+        Portfolio.portfolios[name]['Overview']['netGainLoss'] = Portfolio.portfolios[name]['Overview']['netWorth'] - Portfolio.portfolios[name]['Overview']['netSpent']
+
     for key, value in Portfolio.portfolios[name].items():
         retVal += ("" + str(key) + ': ' + str(value) + "\n")
     return str(retVal)
@@ -30,12 +48,13 @@ def getPortfolioInfo(name):
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def createPortfolio(name):
-    newPortfolio = Portfolio({'Overview': {'Name': name, 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
+    newPortfolio = Portfolio({'Overview': {'Name': name,  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
+                              'Stocks': {}})
     return newPortfolio
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Default Portfolio
-p1 = Portfolio({'Overview': {'Name': 'Chris', 'netWorth': 0, 'sharesOwned': 0}, 'Stocks': {'': 0}})
-
+p1 = Portfolio({'Overview': {'Name': 'Chris',  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
+                'Stocks': {}})
 # -------------------------------------------------------------------------------------------------------------------- #
