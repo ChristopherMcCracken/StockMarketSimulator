@@ -5,6 +5,11 @@ from SQLite import insertPortfolio, loadPortfolioFromDB
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def buySellStocks(name, stockTicker, stockAmount):
+    try:
+        Portfolio.portfolios[name]
+    except:
+        loadPortfolioFromDB(name)
+
     print(stockTicker)
     stockData = GrabDataFromAPI(stockTicker)
     print(stockData)
