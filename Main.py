@@ -1,9 +1,10 @@
 from Portfolio import Portfolio
 from GrabDataFromAPI import GrabDataFromAPI
+from SQLite import insertPortfolio, loadPortfolioFromDB
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def buySellStocks(portfolioName, stockTicker, stockAmount):
+def buySellStocks(name, stockTicker, stockAmount):
     print(stockTicker)
     stockData = GrabDataFromAPI(stockTicker)
     print(stockData)
@@ -12,17 +13,25 @@ def buySellStocks(portfolioName, stockTicker, stockAmount):
     amountSpent = float(stockAmount) * tickerPrice
     # Update Portfolio
     print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
-    Portfolio.portfolios[portfolioName]['Overview']['sharesOwned'] += stockAmount
-    Portfolio.portfolios[portfolioName]['Overview']['netSpent'] += amountSpent
-    if stockTicker in Portfolio.portfolios[portfolioName]['Stocks']:
-        Portfolio.portfolios[portfolioName]['Stocks'][stockTicker] += stockAmount
+    Portfolio.portfolios[name]['Overview']['sharesOwned'] += stockAmount
+    Portfolio.portfolios[name]['Overview']['netSpent'] += amountSpent
+    if stockTicker in Portfolio.portfolios[name]['Stocks']:
+        Portfolio.portfolios[name]['Stocks'][stockTicker] += stockAmount
     else:
-        Portfolio.portfolios[portfolioName]['Stocks'][stockTicker] = stockAmount
+        Portfolio.portfolios[name]['Stocks'][stockTicker] = stockAmount
+    insertPortfolio(name)  # update portfolio in db
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
     retVal = "Your current portfolio information: \n"
+
+    # Check if portfolio with name sent in is already loaded into program, if not, try to load it from database
+    try:
+        Portfolio.portfolios[name]
+    except:
+        loadPortfolioFromDB(name)
+
     if Portfolio.portfolios[name]['Stocks']:  # if there are no stocks bought yet, the dictionary evaluates to false and passes this block
         stockList = list(Portfolio.portfolios[name]['Stocks'])  # cast to list to be able to access stocks by integer index
         stockData = GrabDataFromAPI(stockList)
@@ -41,6 +50,7 @@ def getPortfolioInfo(name):
         Portfolio.portfolios[name]['Overview']['netWorth'] = amountSpent
         Portfolio.portfolios[name]['Overview']['netGainLoss'] = Portfolio.portfolios[name]['Overview']['netWorth'] - Portfolio.portfolios[name]['Overview']['netSpent']
 
+    insertPortfolio(name)  # update portfolio in db
     for key, value in Portfolio.portfolios[name].items():
         retVal += ("" + str(key) + ': ' + str(value) + "\n")
     return str(retVal)
@@ -50,11 +60,13 @@ def getPortfolioInfo(name):
 def createPortfolio(name):
     newPortfolio = Portfolio({'Overview': {'Name': name,  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
                               'Stocks': {}})
+    insertPortfolio(name)  # save portfolio to db
     return newPortfolio
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Default Portfolio
-p1 = Portfolio({'Overview': {'Name': 'Chris',  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
-                'Stocks': {}})
+Portfolio({'Overview': {'Name': 'Default',  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
+           'Stocks': {}})
+
 # -------------------------------------------------------------------------------------------------------------------- #

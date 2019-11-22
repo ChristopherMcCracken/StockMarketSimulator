@@ -16,12 +16,14 @@ class Ui_Application(object):
         stockAmount = self.inputWindow.getint("Enter how many shares to buy/sell: ")
         Main.buySellStocks(portfolioName, stockTicker, stockAmount)
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def createPortfolioWindow(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
         createPortfolio(portfolioName)
         return portfolioName
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def viewPortfolioWindow(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
@@ -34,6 +36,7 @@ class Ui_Application(object):
         label.adjustSize()
         self.viewPortfolioWindow.show()
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def setupUi(self, Application):
         Application.setObjectName("Application")
         Application.resize(1000, 1000)
@@ -56,7 +59,7 @@ class Ui_Application(object):
         QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), self.createPortfolioWindow)
         QtCore.QMetaObject.connectSlotsByName(Application)
 
-    # -------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------------------------------------------------------------------------------- #
     def retranslateUi(self, Application):
         Application.setWindowTitle(
             QtWidgets.QApplication.translate("Application", "Stock Market Application", None, -1))
@@ -91,6 +94,7 @@ class inputDialog(QWidget):
         self.setLayout(layout)
         self.setWindowTitle("Input Dialog demo")
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def getItem(self, prompt="Enter an option: "):
         items = ("P1", "P2", "P3", "P4")
 
@@ -101,6 +105,7 @@ class inputDialog(QWidget):
             self.le.setText(item)
             return str(item)
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def gettext(self, prompt="Enter The Portfolio Name: "):
         text, ok = QInputDialog.getText(self, 'Text Input Dialog', prompt)
 
@@ -108,6 +113,7 @@ class inputDialog(QWidget):
             self.le1.setText(str(text))
             return str(text)
 
+# -------------------------------------------------------------------------------------------------------------------- #
     def getint(self, prompt="Enter a number: "):
         num, ok = QInputDialog.getInt(self, "integer input dialog", prompt)
 
