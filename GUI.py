@@ -15,8 +15,9 @@ class Ui_Application(object):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext("Enter portfolio to update: ")
         stockTicker = self.inputWindow.gettext("Enter the stock name to trade: ")
-        stockAmount = self.inputWindow.getint("Enter how many shares to buy/sell: ")
-        Main.buySellStocks(portfolioName, stockTicker, stockAmount)
+        tickerPrice = Main.getStockPrice(portfolioName, stockTicker)
+        stockAmount = self.inputWindow.getint(f"The price of this stock is: ${tickerPrice}\nEnter how many shares to buy/sell: ")
+        Main.buySellStocks(portfolioName, stockTicker, stockAmount, tickerPrice)
 
 # -------------------------------------------------------------------------------------------------------------------- #
     def createPortfolioWindow(self):

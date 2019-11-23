@@ -4,17 +4,7 @@ from SQLite import insertPortfolio, loadPortfolioFromDB
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
-def buySellStocks(name, stockTicker, stockAmount):
-    try:
-        Portfolio.portfolios[name]
-    except:
-        loadPortfolioFromDB(name)
-
-    print(stockTicker)
-    stockData = GrabDataFromAPI(stockTicker)
-    print(stockData)
-    tickerPrice = float(stockData['data'][0]['price'])
-    print(f"The price of this ticker is: {tickerPrice}")
+def buySellStocks(name, stockTicker, stockAmount, tickerPrice):
     amountSpent = float(stockAmount) * tickerPrice
     # Update Portfolio
     print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
@@ -25,6 +15,21 @@ def buySellStocks(name, stockTicker, stockAmount):
     else:
         Portfolio.portfolios[name]['Stocks'][stockTicker] = stockAmount
     insertPortfolio(name)  # update portfolio in db
+
+
+# -------------------------------------------------------------------------------------------------------------------- #
+def getStockPrice(name, stockTicker):
+    try:
+        Portfolio.portfolios[name]
+    except:
+        loadPortfolioFromDB(name)
+
+    print(stockTicker)
+    stockData = GrabDataFromAPI(stockTicker)
+    print(stockData)
+    tickerPrice = float(stockData['data'][0]['price'])
+    print(f"The price of this ticker is: {tickerPrice}")
+    return tickerPrice
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
