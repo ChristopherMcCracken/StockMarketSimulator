@@ -46,17 +46,21 @@ class Ui_Application(object):
         daysBack = self.inputWindow.getint("Enter number of days to view: ")
 
         self.wid = QtWidgets.QWidget()
-        self.wid.resize(250, 150)
+        self.wid.resize(1000, 500)
         grid = QtWidgets.QGridLayout(self.wid)
 
-        fig = Figure(figsize=(7, 5), dpi=65, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
+        fig = Figure()
         axs = fig.add_subplot(111)
 
         data = GrabDataFromAPI.grabStockHistory(ticker, daysBack)
         days = list(range(0, daysBack))
         axs.set_xlabel('Days Ago')
         axs.set_ylabel('Price in US Dollars')
-        axs.plot(days, data)
+        axs.set_title(ticker + ' Closing Price History')
+        axs.grid(True)
+        fig.patch.set_facecolor('silver')
+        axs.set_facecolor('grey')
+        axs.plot(days, data, color='cyan')
 
         canvas = FigureCanvas(fig)
         grid.addWidget(canvas, 0, 0)
