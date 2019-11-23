@@ -29,7 +29,6 @@ def buySellStocks(name, stockTicker, stockAmount):
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
-    retVal = "Your current portfolio information: \n"
 
     # Check if portfolio with name sent in is already loaded into program, if not, try to load it from database
     try:
@@ -56,8 +55,15 @@ def getPortfolioInfo(name):
         Portfolio.portfolios[name]['Overview']['netGainLoss'] = Portfolio.portfolios[name]['Overview']['netWorth'] - Portfolio.portfolios[name]['Overview']['netSpent']
 
     insertPortfolio(name)  # update portfolio in db
-    for key, value in Portfolio.portfolios[name].items():
-        retVal += ("" + str(key) + ': ' + str(value) + "\n")
+    retVal = "Your current portfolio information: \n"
+    retVal += ('Name: ' + Portfolio.portfolios[name]['Overview']['Name'] + '\n')
+    retVal += ('Net Spent: $' + str(Portfolio.portfolios[name]['Overview']['netSpent']) + '\n')
+    retVal += ('Net Worth: $' + str(Portfolio.portfolios[name]['Overview']['netWorth']) + '\n')
+    retVal += ('Net Gain/Net Loss: $' + str(Portfolio.portfolios[name]['Overview']['netGainLoss']) + '\n')
+    retVal += ('Shares Owned: ' + str(Portfolio.portfolios[name]['Overview']['sharesOwned']) + '\n')
+    for key, value in Portfolio.portfolios[name]['Stocks'].items():
+        retVal += (str(key) + ': ' + str(value) + " shares\n")
+
     return str(retVal)
 
 

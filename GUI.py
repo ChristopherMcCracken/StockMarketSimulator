@@ -33,6 +33,7 @@ class Ui_Application(object):
         label = QtWidgets.QLabel(self.viewPortfolioWindow)
         label.move(50, 50)
         label.setText(Main.getPortfolioInfo(portfolioName))
+        label.setStyleSheet("QLabel {font: 16pt Calibri}")
         label.adjustSize()
         self.viewPortfolioWindow.show()
 
