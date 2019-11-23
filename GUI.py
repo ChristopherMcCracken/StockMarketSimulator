@@ -1,16 +1,18 @@
-import sys
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtWidgets
 from PySide2.QtGui import QPalette, QColor, Qt
-from PySide2.QtWidgets import QMainWindow, QApplication, QInputDialog, QWidget, QPushButton, QLabel, QFormLayout, QLineEdit
+from PySide2.QtWidgets import QMainWindow, QInputDialog, QWidget, QPushButton, QFormLayout, QLineEdit
 import Main
 from Main import createPortfolio
-
-
+import sys
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
+import GrabDataFromAPI
 # -------------------------------------------------------------------------------------------------------------------- #
 class Ui_Application(object):
 # -------------------------------------------------------------------------------------------------------------------- #
     def buySellStocks(self):
-        myList = self.inputWindow = inputDialog()
+        self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext("Enter portfolio to update: ")
         stockTicker = self.inputWindow.gettext("Enter the stock name to trade: ")
         stockAmount = self.inputWindow.getint("Enter how many shares to buy/sell: ")
@@ -38,6 +40,29 @@ class Ui_Application(object):
         self.viewPortfolioWindow.show()
 
 # -------------------------------------------------------------------------------------------------------------------- #
+    def plotStockHistory(self):
+        self.inputWindow = inputDialog()
+        ticker = self.inputWindow.gettext("Enter stock to view: ")
+        daysBack = self.inputWindow.getint("Enter number of days to view: ")
+
+        self.wid = QtWidgets.QWidget()
+        self.wid.resize(250, 150)
+        grid = QtWidgets.QGridLayout(self.wid)
+
+        fig = Figure(figsize=(7, 5), dpi=65, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
+        axs = fig.add_subplot(111)
+
+        data = GrabDataFromAPI.grabStockHistory(ticker, daysBack)
+        days = list(range(0, daysBack))
+        axs.set_xlabel('Days Ago')
+        axs.set_ylabel('Price in US Dollars')
+        axs.plot(days, data)
+
+        canvas = FigureCanvas(fig)
+        grid.addWidget(canvas, 0, 0)
+        self.wid.show()
+
+# -------------------------------------------------------------------------------------------------------------------- #
     def setupUi(self, Application):
         Application.setObjectName("Application")
         Application.resize(1000, 1000)
@@ -46,18 +71,26 @@ class Ui_Application(object):
         self.pushButton_3 = QtWidgets.QPushButton(Application)
         self.pushButton_3.setObjectName("pushButton_3")
         self.gridLayout.addWidget(self.pushButton_3, 4, 0, 1, 1)
+
         self.pushButton = QtWidgets.QPushButton(Application)
         self.pushButton.setStyleSheet("")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
+
         self.pushButton_2 = QtWidgets.QPushButton(Application)
         self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout.addWidget(self.pushButton_2, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_2, 2, 0, 1, 1)
+
+        self.pushButton_4 = QtWidgets.QPushButton(Application)
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.gridLayout.addWidget(self.pushButton_4, 3, 0, 1, 1)
 
         self.retranslateUi(Application)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), self.buySellStocks)
         QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), self.viewPortfolioWindow)
         QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), self.createPortfolioWindow)
+        QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL("clicked()"), self.plotStockHistory)
+
         QtCore.QMetaObject.connectSlotsByName(Application)
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -67,6 +100,7 @@ class Ui_Application(object):
         self.pushButton_3.setText(QtWidgets.QApplication.translate("Application", "Create Portfolio", None, -1))
         self.pushButton.setText(QtWidgets.QApplication.translate("Application", "Buy/Sell Stocks", None, -1))
         self.pushButton_2.setText(QtWidgets.QApplication.translate("Application", "View Portfolio", None, -1))
+        self.pushButton_4.setText(QtWidgets.QApplication.translate("Application", "Plot Stock History", None, -1))
 
 
 # -------------------------------------------------------------------------------------------------------------------- #

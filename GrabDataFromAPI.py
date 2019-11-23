@@ -1,3 +1,4 @@
+import numpy as np
 import requests
 import json
 
@@ -37,4 +38,20 @@ def GrabDataFromAPI(tickers):
         print(f'{stockName} ({stockSymbol}): ${stockPrice}, last updated at {lastUpdatedTime}\n')
 
     return stockRequestDict
+
+
 # -------------------------------------------------------------------------------------------------------------------- #
+def grabStockHistory(ticker, amountOfDays):
+    stockRequest = requests.get('https://api.worldtradingdata.com/api/v1/history?symbol=' + ticker + '&sort=newest&api_token=oL8qjdubhjFMONwfBVsJ0erhd73PVMmowP8z7TVwmRgUxpHoSB4iNDJ3Jj0y')
+    stockRequestJSON = stockRequest.text
+    stockRequestDict = json.loads(stockRequestJSON)
+
+    data = np.empty((amountOfDays, 2))
+
+    for index, date in enumerate(stockRequestDict['history']):
+        print(stockRequestDict['history'][date]['close'])
+        data[index] = stockRequestDict['history'][date]['close']
+        if index == amountOfDays-1:
+            break
+
+    return data
