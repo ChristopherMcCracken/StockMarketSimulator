@@ -1,6 +1,7 @@
+import PySide2
 from PySide2 import QtCore, QtWidgets
-from PySide2.QtGui import QPalette, QColor, Qt
-from PySide2.QtWidgets import QMainWindow, QInputDialog, QWidget, QPushButton, QFormLayout, QLineEdit
+from PySide2.QtGui import QPalette, QColor, Qt, QFont
+from PySide2.QtWidgets import QMainWindow, QInputDialog, QWidget, QPushButton, QFormLayout, QLineEdit, QLabel
 import Main
 from Main import createPortfolio
 import sys
@@ -8,25 +9,28 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import GrabDataFromAPI
+
+
 # -------------------------------------------------------------------------------------------------------------------- #
 class Ui_Application(object):
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def buySellStocks(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext("Enter portfolio to update: ")
         stockTicker = self.inputWindow.gettext("Enter the stock name to trade: ")
         tickerPrice = Main.getStockPrice(portfolioName, stockTicker)
-        stockAmount = self.inputWindow.getint(f"The price of this stock is: ${tickerPrice}\nEnter how many shares to buy/sell: ")
+        stockAmount = self.inputWindow.getint(
+            f"The price of this stock is: ${tickerPrice}\nEnter how many shares to buy/sell: ")
         Main.buySellStocks(portfolioName, stockTicker, stockAmount, tickerPrice)
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def createPortfolioWindow(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
         createPortfolio(portfolioName)
         return portfolioName
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def viewPortfolioWindow(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
@@ -40,7 +44,7 @@ class Ui_Application(object):
         label.adjustSize()
         self.viewPortfolioWindow.show()
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def plotStockHistory(self):
         self.inputWindow = inputDialog()
         ticker = self.inputWindow.gettext("Enter stock to view: ")
@@ -67,38 +71,50 @@ class Ui_Application(object):
         grid.addWidget(canvas, 0, 0)
         self.wid.show()
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def setupUi(self, Application):
         Application.setObjectName("Application")
-        Application.resize(1000, 1000)
+        Application.resize(2000, 2000)
+
+        labelA = QtWidgets.QLabel(Application)
+        labelA.setText('Virtual Stock Market Application')
+        labelA.setStyleSheet("QLabel {font: 32pt Elephant; color: #e8fcca}")
+        labelA.adjustSize()
+        labelA.move(125, 60)
+
         self.gridLayout = QtWidgets.QGridLayout(Application)
         self.gridLayout.setObjectName("gridLayout")
+
+        self.pushButton_2 = QtWidgets.QPushButton(Application)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.gridLayout.addWidget(self.pushButton_2, 4, 0, 1, 1)
+        self.pushButton_2.setStyleSheet('QPushButton {background-color: #525151; color: white; font: 70px Elephant; }')
+
         self.pushButton_3 = QtWidgets.QPushButton(Application)
         self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout.addWidget(self.pushButton_3, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_3, 0, 0, 1, 1)
+        self.pushButton_3.setStyleSheet('QPushButton {background-color: #525151; color: white; font: 70px Elephant;}')
 
         self.pushButton = QtWidgets.QPushButton(Application)
         self.pushButton.setStyleSheet("")
         self.pushButton.setObjectName("pushButton")
-        self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
-
-        self.pushButton_2 = QtWidgets.QPushButton(Application)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout.addWidget(self.pushButton_2, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton, 2, 0, 1, 1)
+        self.pushButton.setStyleSheet('QPushButton {background-color: #525151; color: white; font: 70px Elephant;}')
 
         self.pushButton_4 = QtWidgets.QPushButton(Application)
         self.pushButton_4.setObjectName("pushButton_4")
         self.gridLayout.addWidget(self.pushButton_4, 3, 0, 1, 1)
+        self.pushButton_4.setStyleSheet('QPushButton {background-color: #525151; color: white; font: 70px Elephant;}')
 
         self.retranslateUi(Application)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), self.createPortfolioWindow)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), self.buySellStocks)
         QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), self.viewPortfolioWindow)
-        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), self.createPortfolioWindow)
         QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL("clicked()"), self.plotStockHistory)
 
         QtCore.QMetaObject.connectSlotsByName(Application)
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def retranslateUi(self, Application):
         Application.setWindowTitle(
             QtWidgets.QApplication.translate("Application", "Stock Market Application", None, -1))
@@ -134,7 +150,7 @@ class inputDialog(QWidget):
         self.setLayout(layout)
         self.setWindowTitle("Input Dialog demo")
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def getItem(self, prompt="Enter an option: "):
         items = ("P1", "P2", "P3", "P4")
 
@@ -145,7 +161,7 @@ class inputDialog(QWidget):
             self.le.setText(item)
             return str(item)
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def gettext(self, prompt="Enter The Portfolio Name: "):
         text, ok = QInputDialog.getText(self, 'Text Input Dialog', prompt)
 
@@ -153,13 +169,14 @@ class inputDialog(QWidget):
             self.le1.setText(str(text))
             return str(text)
 
-# -------------------------------------------------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def getint(self, prompt="Enter a number: "):
         num, ok = QInputDialog.getInt(self, "integer input dialog", prompt)
 
         if ok:
             self.le2.setText(str(num))
             return int(num)
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def main():
