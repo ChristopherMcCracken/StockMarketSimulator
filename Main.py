@@ -34,7 +34,6 @@ def getStockPrice(name, stockTicker):
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
-
     # Check if portfolio with name sent in is already loaded into program, if not, try to load it from database
     try:
         Portfolio.portfolios[name]

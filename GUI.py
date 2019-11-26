@@ -15,59 +15,66 @@ class Ui_Application(object):
     def buySellStocks(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext("Enter portfolio to update: ")
-        stockTicker = self.inputWindow.gettext("Enter the stock name to trade: ")
-        tickerPrice = Main.getStockPrice(portfolioName, stockTicker)
-        stockAmount = self.inputWindow.getint(
-            f"The price of this stock is: ${tickerPrice}\nEnter how many shares to buy/sell: ")
-        Main.buySellStocks(portfolioName, stockTicker, stockAmount, tickerPrice)
+        if portfolioName is not None:
+            stockTicker = self.inputWindow.gettext("Enter the stock name to trade: ")
+            if stockTicker is not None:
+                tickerPrice = Main.getStockPrice(portfolioName, stockTicker)
+                stockAmount = self.inputWindow.getint(
+                    f"The price of this stock is: ${tickerPrice}\nEnter how many shares to buy/sell: ")
+                if stockAmount is not None:
+                    Main.buySellStocks(portfolioName, stockTicker, stockAmount, tickerPrice)
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def createPortfolioWindow(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
-        createPortfolio(portfolioName)
-        return portfolioName
+        if portfolioName is not None:
+            createPortfolio(portfolioName)
+            return portfolioName
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def viewPortfolioWindow(self):
         self.inputWindow = inputDialog()
         portfolioName = self.inputWindow.gettext()
-        self.viewPortfolioWindow = QMainWindow()
-        self.viewPortfolioWindow.resize(1000, 500)
-        self.viewPortfolioWindow.setWindowTitle("View Portfolio")
-        label = QtWidgets.QLabel(self.viewPortfolioWindow)
-        label.move(50, 50)
-        label.setText(Main.getPortfolioInfo(portfolioName))
-        label.setStyleSheet("QLabel {font: 20pt Calibri}")
-        label.adjustSize()
-        self.viewPortfolioWindow.show()
+        if portfolioName is not None:
+            self.viewPortfolioWindow = QMainWindow()
+            self.viewPortfolioWindow.resize(1000, 500)
+            self.viewPortfolioWindow.setWindowTitle("View Portfolio")
+            label = QtWidgets.QLabel(self.viewPortfolioWindow)
+            label.move(50, 50)
+            label.setText(Main.getPortfolioInfo(portfolioName))
+            label.setStyleSheet("QLabel {font: 20pt Calibri}")
+            label.adjustSize()
+            self.viewPortfolioWindow.show()
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def plotStockHistory(self):
         self.inputWindow = inputDialog()
         ticker = self.inputWindow.gettext("Enter stock to view: ")
-        daysBack = self.inputWindow.getint("Enter number of days to view: ")
+        if ticker is not None:
+            daysBack = self.inputWindow.getint("Enter number of days to view: ")
+            if daysBack is not None:
+                self.wid = QtWidgets.QWidget()
+                self.wid.setWindowTitle(f"{ticker} Stock History")
+                self.wid.resize(1000, 500)
+                grid = QtWidgets.QGridLayout(self.wid)
 
-        self.wid = QtWidgets.QWidget()
-        self.wid.resize(1000, 500)
-        grid = QtWidgets.QGridLayout(self.wid)
+                fig = Figure()
+                axs = fig.add_subplot(111)
 
-        fig = Figure()
-        axs = fig.add_subplot(111)
+                data = GrabDataFromAPI.grabStockHistory(ticker, daysBack)
+                days = list(range(0, daysBack))
+                axs.set_xlabel('Days Ago')
+                axs.set_ylabel('Price in US Dollars')
+                axs.set_title(ticker + ' Closing Price History')
+                axs.grid(True)
+                fig.patch.set_facecolor('silver')
+                axs.set_facecolor('grey')
+                axs.plot(days, data, color='cyan')
 
-        data = GrabDataFromAPI.grabStockHistory(ticker, daysBack)
-        days = list(range(0, daysBack))
-        axs.set_xlabel('Days Ago')
-        axs.set_ylabel('Price in US Dollars')
-        axs.set_title(ticker + ' Closing Price History')
-        axs.grid(True)
-        fig.patch.set_facecolor('silver')
-        axs.set_facecolor('grey')
-        axs.plot(days, data, color='cyan')
-
-        canvas = FigureCanvas(fig)
-        grid.addWidget(canvas, 0, 0)
-        self.wid.show()
+                canvas = FigureCanvas(fig)
+                grid.addWidget(canvas, 0, 0)
+                self.wid.show()
 
     # ------------------------------------------------------------------------------------------------------------ #
     def setupUi(self, Application):
@@ -195,6 +202,8 @@ class inputDialog(QWidget):
         if ok and item:
             self.le.setText(item)
             return str(item)
+        else:
+            return None
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def gettext(self, prompt="Enter The Portfolio Name: "):
@@ -203,6 +212,8 @@ class inputDialog(QWidget):
         if ok:
             self.le1.setText(str(text))
             return str(text)
+        else:
+            return None
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def getint(self, prompt="Enter a number: "):
@@ -211,6 +222,8 @@ class inputDialog(QWidget):
         if ok:
             self.le2.setText(str(num))
             return int(num)
+        else:
+            return None
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -218,7 +231,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
 
     # Change palette to allow for for dark theme
-    app.setStyle('Fusion')
+    app.setStyle('Windows')
     palette = QPalette()
     palette.setColor(QPalette.Window, QColor(53, 53, 53))
     palette.setColor(QPalette.WindowText, Qt.white)
