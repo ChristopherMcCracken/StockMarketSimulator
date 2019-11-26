@@ -33,6 +33,16 @@ def getStockPrice(name, stockTicker):
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
+def getAllStockData(stockTickers):
+    stockRequestDict = GrabDataFromAPI(stockTickers)
+    allFormattedData = ""
+    for i in stockRequestDict['data']:
+        for key, value in i.items():
+            allFormattedData += f"{key}: {value}\n"
+    return allFormattedData
+
+
+# -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
     # Check if portfolio with name sent in is already loaded into program, if not, try to load it from database
     try:

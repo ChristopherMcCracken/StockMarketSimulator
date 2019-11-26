@@ -1,6 +1,6 @@
 from PySide2 import QtCore, QtWidgets
-from PySide2.QtGui import QPalette, QColor, Qt, QFont
-from PySide2.QtWidgets import QMainWindow, QInputDialog, QWidget, QPushButton, QFormLayout, QLineEdit, QLabel
+from PySide2.QtGui import QPalette, QColor, Qt
+from PySide2.QtWidgets import QMainWindow, QInputDialog, QWidget, QPushButton, QFormLayout, QLineEdit, QScrollArea
 import Main
 from Main import createPortfolio
 import sys
@@ -43,9 +43,24 @@ class Ui_Application(object):
             label = QtWidgets.QLabel(self.viewPortfolioWindow)
             label.move(50, 50)
             label.setText(Main.getPortfolioInfo(portfolioName))
-            label.setStyleSheet("QLabel {font: 20pt Calibri}")
+            label.setStyleSheet("QLabel {font: 22pt Calibri}")
             label.adjustSize()
             self.viewPortfolioWindow.show()
+
+    # ---------------------------------------------------------------------------------------------------------------- #
+    def detailedStockInfo(self):
+        self.inputWindow = inputDialog()
+        stockTickers = self.inputWindow.gettext("Enter stock name: ")
+        if stockTickers is not None:
+            self.detailedStockInfo = QMainWindow()
+            self.detailedStockInfo.resize(750, 1000)
+            self.detailedStockInfo.setWindowTitle("Detailed Stock Info")
+            label = QtWidgets.QLabel(self.detailedStockInfo)
+            label.move(50, 50)
+            label.setText(Main.getAllStockData(stockTickers))
+            label.setStyleSheet("QLabel {font: 22pt Calibri}")
+            label.adjustSize()
+            self.detailedStockInfo.show()
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def plotStockHistory(self):
@@ -135,6 +150,17 @@ class Ui_Application(object):
         self.pushButton_4.setStyleSheet('QPushButton {font: 25pt Elephant}')
         self.gridLayout.addWidget(self.pushButton_4, 5, 0, 1, 1)
 
+        # Fifth Button
+        self.pushButton_5 = QtWidgets.QPushButton(Application)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_5.sizePolicy().hasHeightForWidth())
+        self.pushButton_5.setSizePolicy(sizePolicy)
+        self.pushButton_5.setObjectName("pushButton_4")
+        self.pushButton_5.setStyleSheet('QPushButton {font: 25pt Elephant}')
+        self.gridLayout.addWidget(self.pushButton_5, 6, 0, 1, 1)
+
         # Lines
         self.line = QtWidgets.QFrame(Application)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -146,13 +172,15 @@ class Ui_Application(object):
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line")
-        self.gridLayout.addWidget(self.line_2, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.line_2, 7, 0, 1, 1)
 
         self.retranslateUi(Application)
         QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL("clicked()"), self.buySellStocks)
         QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL("clicked()"), self.viewPortfolioWindow)
         QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL("clicked()"), self.createPortfolioWindow)
         QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL("clicked()"), self.plotStockHistory)
+        QtCore.QObject.connect(self.pushButton_5, QtCore.SIGNAL("clicked()"), self.detailedStockInfo)
+
         QtCore.QMetaObject.connectSlotsByName(Application)
 
     # ------------------------------------------------------------------------------------------------------------ #
@@ -164,6 +192,8 @@ class Ui_Application(object):
             QtWidgets.QApplication.translate("Application", "Virtual Stock Market Application", None, -1))
         self.pushButton_4.setText(QtWidgets.QApplication.translate("Application", "Plot Stock History", None, -1))
         self.pushButton_2.setText(QtWidgets.QApplication.translate("Application", "View Portfolio", None, -1))
+        self.pushButton_5.setText(QtWidgets.QApplication.translate("Application", "View Detailed Stock Data", None, -1))
+
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
