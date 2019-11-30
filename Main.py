@@ -1,21 +1,24 @@
 from Portfolio import Portfolio
 from GrabDataFromAPI import GrabDataFromAPI
 from SQLite import insertPortfolio, loadPortfolioFromDB
+from tabulate import tabulate
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def buySellStocks(name, stockTicker, stockAmount, tickerPrice):
     amountSpent = float(stockAmount) * tickerPrice
-    # Update Portfolio
-    print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
-    Portfolio.portfolios[name]['Overview']['sharesOwned'] += stockAmount
-    Portfolio.portfolios[name]['Overview']['netSpent'] += amountSpent
+    if stockAmount < 0 and (abs(stockAmount) > Portfolio.portfolios[name]['Stocks'][stockTicker]):
+        return
+
     if stockTicker in Portfolio.portfolios[name]['Stocks']:
         Portfolio.portfolios[name]['Stocks'][stockTicker] += stockAmount
     else:
         Portfolio.portfolios[name]['Stocks'][stockTicker] = stockAmount
     insertPortfolio(name)  # update portfolio in db
 
+    print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
+    Portfolio.portfolios[name]['Overview']['sharesOwned'] += stockAmount
+    Portfolio.portfolios[name]['Overview']['netSpent'] += amountSpent
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getStockPrice(name, stockTicker):
@@ -35,12 +38,11 @@ def getStockPrice(name, stockTicker):
 # -------------------------------------------------------------------------------------------------------------------- #
 def getAllStockData(stockTickers):
     stockRequestDict = GrabDataFromAPI(stockTickers)
-    allFormattedData = ""
+    table = []
     for i in stockRequestDict['data']:
         for key, value in i.items():
-            allFormattedData += f"{key}: {value}\n"
-    return allFormattedData
-
+            table.append([str(key) + ':', str(value)])
+    return str(tabulate(table))
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
@@ -69,16 +71,23 @@ def getPortfolioInfo(name):
         Portfolio.portfolios[name]['Overview']['netGainLoss'] = Portfolio.portfolios[name]['Overview']['netWorth'] - Portfolio.portfolios[name]['Overview']['netSpent']
 
     insertPortfolio(name)  # update portfolio in db
-    retVal = "Your current portfolio information: \n"
-    retVal += ('Name: ' + Portfolio.portfolios[name]['Overview']['Name'] + '\n')
-    retVal += ('Net Spent: $' + str(Portfolio.portfolios[name]['Overview']['netSpent']) + '\n')
-    retVal += ('Net Worth: $' + str(Portfolio.portfolios[name]['Overview']['netWorth']) + '\n')
-    retVal += ('Net Gain/Net Loss: $' + str(Portfolio.portfolios[name]['Overview']['netGainLoss']) + '\n')
-    retVal += ('Shares Owned: ' + str(Portfolio.portfolios[name]['Overview']['sharesOwned']) + '\n')
-    for key, value in Portfolio.portfolios[name]['Stocks'].items():
-        retVal += (str(key) + ': ' + str(value) + " shares\n")
 
-    return str(retVal)
+    table = [
+        ['Name:', Portfolio.portfolios[name]['Overview']['Name']],
+        ['Net Spent:', '$' + str(Portfolio.portfolios[name]['Overview']['netSpent'])],
+        ['Net Worth:', '$' + str(Portfolio.portfolios[name]['Overview']['netWorth'])],
+        ['Net Gain/Loss:', '$' + str(Portfolio.portfolios[name]['Overview']['netGainLoss'])],
+        ['Shares Owned:', str(Portfolio.portfolios[name]['Overview']['sharesOwned']) + ' Shares']
+    ]
+
+    if Portfolio.portfolios[name]['Overview']['netSpent'] != 0:
+        table.insert(4, ['Percent Gain/Loss:', str((Portfolio.portfolios[name]['Overview']['netWorth'] -
+                                             Portfolio.portfolios[name]['Overview']['netSpent']) /
+                                             Portfolio.portfolios[name]['Overview']['netSpent'] * 100) + '%'])
+    for key, value in Portfolio.portfolios[name]['Stocks'].items():
+        table.append([str(key) + ':', str(value) + " Shares"])
+    print(str(tabulate(table)))
+    return str(tabulate(table))
 
 
 # -------------------------------------------------------------------------------------------------------------------- #

@@ -7,7 +7,12 @@ import sys
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import GrabDataFromAPI
-
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import dates, ticker
+import matplotlib as mpl
+from mpl_finance import candlestick_ohlc
+import GrabDataFromAPI
 
 # -------------------------------------------------------------------------------------------------------------------- #
 class Ui_Application(object):
@@ -43,7 +48,7 @@ class Ui_Application(object):
             label = QtWidgets.QLabel(self.viewPortfolioWindow)
             label.move(50, 50)
             label.setText(Main.getPortfolioInfo(portfolioName))
-            label.setStyleSheet("QLabel {font: 22pt Calibri}")
+            label.setStyleSheet("QLabel {font: 22pt Courier}")
             label.adjustSize()
             self.viewPortfolioWindow.show()
 
@@ -53,40 +58,57 @@ class Ui_Application(object):
         stockTickers = self.inputWindow.gettext("Enter stock name: ")
         if stockTickers is not None:
             self.detailedStockInfo = QMainWindow()
-            self.detailedStockInfo.resize(750, 1000)
+            self.detailedStockInfo.resize(1000, 1000)
             self.detailedStockInfo.setWindowTitle("Detailed Stock Info")
             label = QtWidgets.QLabel(self.detailedStockInfo)
             label.move(50, 50)
             label.setText(Main.getAllStockData(stockTickers))
-            label.setStyleSheet("QLabel {font: 22pt Calibri}")
+            label.setStyleSheet("QLabel {font: 22pt Courier}")
             label.adjustSize()
             self.detailedStockInfo.show()
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def plotStockHistory(self):
         self.inputWindow = inputDialog()
-        ticker = self.inputWindow.gettext("Enter stock to view: ")
-        if ticker is not None:
-            daysBack = self.inputWindow.getint("Enter number of days to view: ")
-            if daysBack is not None:
+        tickerChoice = self.inputWindow.gettext("Enter stock to view: ")
+        if tickerChoice is not None:
+            numberOfDays = self.inputWindow.getint("Enter number of days to view: ")
+            if numberOfDays is not None:
+                chartChoice = self.inputWindow.getItem("Choose chart type: ")
+                print(chartChoice)
                 self.wid = QtWidgets.QWidget()
-                self.wid.setWindowTitle(f"{ticker} Stock History")
+                self.wid.setWindowTitle(f"{tickerChoice} Stock History")
                 self.wid.resize(1000, 500)
                 grid = QtWidgets.QGridLayout(self.wid)
-
-                fig = Figure()
-                axs = fig.add_subplot(111)
-
-                data = GrabDataFromAPI.grabStockHistory(ticker, daysBack)
-                days = list(range(0, daysBack))
-                axs.set_xlabel('Days Ago')
-                axs.set_ylabel('Price in US Dollars')
-                axs.set_title(ticker + ' Closing Price History')
-                axs.grid(True)
+                fig, ax = plt.subplots()
+                data = GrabDataFromAPI.grabStockHistory(tickerChoice, numberOfDays)
                 fig.patch.set_facecolor('silver')
-                axs.set_facecolor('grey')
-                axs.plot(days, data, color='cyan')
+                ax.set_facecolor('grey')
+                if chartChoice != 'Candlestick':
+                    x = [dates.datestr2num(data[i][0]) for i in range(numberOfDays)]
+                    y = [float(data[i][4]) for i in range(numberOfDays)]
+                    ax.xaxis.set_major_formatter(dates.DateFormatter('%m/%d/%Y'))
+                    ax.xaxis.set_major_locator(ticker.MaxNLocator(10))
+                    ax.set_xlabel('Date')
+                    ax.set_ylabel('Price in USD')
+                    ax.set_title(tickerChoice + ' Closing Price History')
+                    ax.grid(True)
+                    ax.plot(x, y, color='cyan')
+                else:
+                    ohlc_data = []  # Open High Low Close Data
+                    for row in data:
+                        ohlc_data.append((dates.datestr2num(row[0]), np.float64(row[1]), np.float64(row[2]),
+                                          np.float64(row[3]), np.float64(row[4])))
 
+                    candlestick_ohlc(ax, ohlc_data, width=float(0.5), colorup='cyan', colordown='orange', alpha=0.8)
+                    ax.xaxis.set_major_formatter(dates.DateFormatter('%m/%d/%Y'))
+                    ax.xaxis.set_major_locator(ticker.MaxNLocator(10))
+                    plt.xticks(rotation=30)
+                    plt.grid()
+                    plt.xlabel('Date')
+                    plt.ylabel('Price in USD')
+                    plt.title(tickerChoice + ' Candlestick Chart')
+                    plt.tight_layout()
                 canvas = FigureCanvas(fig)
                 grid.addWidget(canvas, 0, 0)
                 self.wid.show()
@@ -157,7 +179,7 @@ class Ui_Application(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_5.sizePolicy().hasHeightForWidth())
         self.pushButton_5.setSizePolicy(sizePolicy)
-        self.pushButton_5.setObjectName("pushButton_4")
+        self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_5.setStyleSheet('QPushButton {font: 25pt Elephant}')
         self.gridLayout.addWidget(self.pushButton_5, 6, 0, 1, 1)
 
@@ -195,7 +217,6 @@ class Ui_Application(object):
         self.pushButton_5.setText(QtWidgets.QApplication.translate("Application", "View Detailed Stock Data", None, -1))
 
 
-
 # -------------------------------------------------------------------------------------------------------------------- #
 class inputDialog(QWidget):
     def __init__(self, parent=None):
@@ -224,10 +245,10 @@ class inputDialog(QWidget):
 
     # ---------------------------------------------------------------------------------------------------------------- #
     def getItem(self, prompt="Enter an option: "):
-        items = ("P1", "P2", "P3", "P4")
+        items = ('Candlestick', 'Closing Prices')
 
         item, ok = QInputDialog.getItem(self, prompt,
-                                        "List of Portfolios", items, 0, False)
+                                        'Choose a chart type:', items, 0, False)
 
         if ok and item:
             self.le.setText(item)
@@ -270,6 +291,7 @@ def main():
     palette.setColor(QPalette.ToolTipBase, Qt.white)
     palette.setColor(QPalette.ToolTipText, Qt.white)
     palette.setColor(QPalette.Text, Qt.white)
+    palette.setColor(QPalette.Button, QColor(82, 81, 81))  # HEX 525151
     palette.setColor(QPalette.Button, QColor(82, 81, 81))  # HEX 525151
     palette.setColor(QPalette.ButtonText, Qt.white)
     palette.setColor(QPalette.BrightText, Qt.red)

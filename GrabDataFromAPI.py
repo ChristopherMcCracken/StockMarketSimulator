@@ -46,11 +46,16 @@ def grabStockHistory(ticker, amountOfDays):
     stockRequestJSON = stockRequest.text
     stockRequestDict = json.loads(stockRequestJSON)
 
-    data = np.empty((amountOfDays, 2))
+    rows, cols = (amountOfDays, 5)
+    data = [['' for i in range(cols)] for j in range(rows)]
 
     for index, date in enumerate(stockRequestDict['history']):
-        print(stockRequestDict['history'][date]['close'])
-        data[index] = stockRequestDict['history'][date]['close']
+        # print(stockRequestDict['history'][date]['close'])
+        data[index][0] = date  # fix this to date
+        data[index][1] = stockRequestDict['history'][date]['open']
+        data[index][2] = stockRequestDict['history'][date]['high']
+        data[index][3] = stockRequestDict['history'][date]['low']
+        data[index][4] = stockRequestDict['history'][date]['close']
         if index == amountOfDays-1:
             break
 
