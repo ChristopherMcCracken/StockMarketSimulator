@@ -1,3 +1,4 @@
+import sqlite3
 from Portfolio import Portfolio
 from GrabDataFromAPI import GrabDataFromAPI
 from SQLite import insertPortfolio, loadPortfolioFromDB
@@ -14,11 +15,12 @@ def buySellStocks(name, stockTicker, stockAmount, tickerPrice):
         Portfolio.portfolios[name]['Stocks'][stockTicker] += stockAmount
     else:
         Portfolio.portfolios[name]['Stocks'][stockTicker] = stockAmount
-    insertPortfolio(name)  # update portfolio in db
 
     print(f'\nYou have spent {amountSpent} for {stockAmount} shares of {stockTicker}\n')
     Portfolio.portfolios[name]['Overview']['sharesOwned'] += stockAmount
     Portfolio.portfolios[name]['Overview']['netSpent'] += amountSpent
+    insertPortfolio(name)  # update portfolio in db
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getStockPrice(name, stockTicker):
@@ -43,6 +45,7 @@ def getAllStockData(stockTickers):
         for key, value in i.items():
             table.append([str(key) + ':', str(value)])
     return str(tabulate(table))
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def getPortfolioInfo(name):
@@ -92,10 +95,18 @@ def getPortfolioInfo(name):
 
 # -------------------------------------------------------------------------------------------------------------------- #
 def createPortfolio(name):
-    newPortfolio = Portfolio({'Overview': {'Name': name,  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
-                              'Stocks': {}})
-    insertPortfolio(name)  # save portfolio to db
-    return newPortfolio
+    conn = sqlite3.connect('Portfolio.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM overview WHERE Name=:Name", {'Name': name})
+    fetchedOverviewValues = c.fetchall()
+    if fetchedOverviewValues:
+        print(f"Portfolio already exists: {fetchedOverviewValues}")
+        return
+    else:
+        newPortfolio = Portfolio({'Overview': {'Name': name,  'sharesOwned': 0, 'netWorth': 0, 'netSpent': 0, 'netGainLoss': 0},
+                                  'Stocks': {}})
+        insertPortfolio(name)  # save portfolio to db
+        return newPortfolio
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
