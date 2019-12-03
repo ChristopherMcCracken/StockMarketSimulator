@@ -54,5 +54,6 @@ c.execute("""CREATE TABLE if not exists overview(
 c.execute("""CREATE TABLE if not exists stocks(
              Name text,
              Stock text,
-             count integer 
+             count integer, 
+             unique(Name)
          )""")
