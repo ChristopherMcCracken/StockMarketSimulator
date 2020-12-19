@@ -1,1 +1,1 @@
-# StockMarketApplication
+# Stock Market Simulator
